@@ -87,7 +87,7 @@ export function Navbar() {
 
             {/* User menu */}
             {user ? (
-              <div className="relative group">
+              <div className="relative group hidden md:block">
                 <button
                   id="user-menu-btn"
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
@@ -177,13 +177,42 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
-            {!user && (
+            
+            {user && <div className="h-px bg-slate-100 my-2" />}
+            
+            {!user ? (
               <Link
                 href="/login"
-                className="block px-3 py-2 bg-teal-500 text-white rounded-lg text-sm font-semibold text-center shadow-sm"
+                className="block px-3 py-2 bg-teal-500 text-white rounded-lg text-sm font-semibold text-center shadow-sm mt-4"
               >
                 Sign In
               </Link>
+            ) : (
+              <>
+                <Link
+                  href="/orders"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"
+                >
+                  <Package size={16} /> My Orders
+                </Link>
+                <Link
+                  href="/account"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"
+                >
+                  <User size={16} /> Account
+                </Link>
+                <button
+                  onClick={() => {
+                    signOut();
+                    setMobileOpen(false);
+                  }}
+                  className="flex items-center gap-2 w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50"
+                >
+                  <LogOut size={16} /> Sign Out
+                </button>
+              </>
             )}
           </nav>
         )}
