@@ -43,6 +43,8 @@ interface ProductFormData {
   in_stock: boolean;
   is_active: boolean;
   is_featured: boolean;
+  new_category_name?: string;
+  new_category_department_id?: string;
 }
 
 const EMPTY_FORM: ProductFormData = {
@@ -153,6 +155,32 @@ function ProductFormModal({
     }
     setSaving(true);
     try {
+      let finalCategoryId = form.category_id;
+
+      // Handle new category creation inline
+      if (form.category_id === "NEW") {
+        if (!form.new_category_name || !form.new_category_department_id) {
+          toast("New category name and department are required", "error");
+          setSaving(false);
+          return;
+        }
+        
+        // Import inline to avoid top-level import issues if not already there
+        const { adminCreateCategory } = await import("@/lib/api");
+        const newCat = await adminCreateCategory(token, {
+          name: form.new_category_name,
+          slug: slugify(form.new_category_name),
+          department_id: form.new_category_department_id,
+          display_order: 99
+        });
+        
+        if (newCat && newCat.id) {
+          finalCategoryId = newCat.id;
+        } else {
+          throw new Error("Failed to create new category");
+        }
+      }
+
       const payload: Partial<Product> = {
         name: form.name,
         slug: form.slug || slugify(form.name),
@@ -163,7 +191,7 @@ function ProductFormModal({
         wholesale_price: form.wholesale_price ? parseFloat(form.wholesale_price) : undefined,
         moq: parseInt(form.moq) || 1,
         unit: form.unit,
-        category_id: form.category_id,
+        category_id: finalCategoryId,
         image_url: form.image_url || undefined,
         in_stock: form.in_stock,
         is_active: form.is_active,
@@ -339,6 +367,9 @@ function ProductFormModal({
                     ))}
                   </optgroup>
                 ))}
+                <optgroup label="Actions">
+                  <option value="NEW">➕ Add New Category...</option>
+                </optgroup>
               </select>
             </div>
             <div>
@@ -355,6 +386,40 @@ function ProductFormModal({
               />
             </div>
           </div>
+
+          {form.category_id === "NEW" && (
+            <div className="grid grid-cols-2 gap-4 p-4 bg-teal-50/50 border border-teal-100 rounded-xl">
+              <div>
+                <label className="block text-xs font-semibold text-teal-800 uppercase tracking-wide mb-1">
+                  New Category Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={form.new_category_name || ""}
+                  onChange={(e) => setField("new_category_name", e.target.value)}
+                  placeholder="e.g. Fresh Fruits"
+                  className="w-full px-3 py-2.5 border border-teal-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-teal-800 uppercase tracking-wide mb-1">
+                  Department *
+                </label>
+                <select
+                  required
+                  value={form.new_category_department_id || ""}
+                  onChange={(e) => setField("new_category_department_id", e.target.value)}
+                  className="w-full px-3 py-2.5 border border-teal-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                >
+                  <option value="">Select department…</option>
+                  {departments.map((d) => (
+                    <option key={d.id} value={d.id}>{d.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
 
           {/* Pricing */}
           <div className="grid grid-cols-3 gap-4">

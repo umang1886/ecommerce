@@ -138,11 +138,17 @@ export const adminGetProducts = (token: string, params = {}) => {
     { token }
   );
 };
-export const adminCreateProduct = (token: string, payload: Partial<Product>) =>
+export const adminCreateProduct = (token: string, data: Partial<Product>) =>
   apiFetch<Product>("/api/admin/products", {
     method: "POST",
-    body: JSON.stringify(payload),
-    token,
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+export const adminCreateCategory = (token: string, data: Partial<Category>) =>
+  apiFetch<Category>("/api/admin/categories", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
   });
 export const adminUpdateProduct = (
   token: string,

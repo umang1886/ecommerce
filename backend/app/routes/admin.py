@@ -58,7 +58,15 @@ def admin_restore_product(product_id: str):
     result = sb.table("products").update({"is_active": True}).eq("id", product_id).execute()
     return jsonify(result.data[0] if result.data else None)
 
+# ─── Categories ──────────────────────────────────────────────────────────────
 
+@admin_bp.post("/categories")
+@require_admin
+def admin_create_category():
+    sb = get_supabase()
+    body = request.get_json()
+    result = sb.table("categories").insert(body).execute()
+    return jsonify(result.data[0] if result.data else None), 201
 
 
 # ─── Products ────────────────────────────────────────────────────────────────
