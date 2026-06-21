@@ -224,6 +224,7 @@ export interface Product {
   size_variant?: string;
   retail_price: number;
   wholesale_price?: number;
+  delivery_charge?: number;
   moq: number;
   unit: string;
   image_url?: string;
@@ -272,6 +273,11 @@ export interface OrderItem {
   unit_price: number;
   quantity: number;
   subtotal: number;
+  products?: {
+    name: string;
+    image_url?: string;
+    slug?: string;
+  };
 }
 
 export interface Address {

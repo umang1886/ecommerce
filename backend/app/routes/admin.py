@@ -124,7 +124,7 @@ def admin_list_orders():
     offset = (page - 1) * PAGE_SIZE
 
     query = sb.table("orders").select(
-        "*, customers(full_name, email, phone), order_items(id), addresses(*)", count="exact"
+        "*, customers(full_name, email, phone), order_items(*, products(name, image_url)), addresses(*)", count="exact"
     )
     if status:
         query = query.eq("status", status)

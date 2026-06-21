@@ -36,6 +36,7 @@ interface ProductFormData {
   size_variant: string;
   retail_price: string;
   wholesale_price: string;
+  delivery_charge: string;
   moq: string;
   unit: string;
   category_id: string;
@@ -55,6 +56,7 @@ const EMPTY_FORM: ProductFormData = {
   size_variant: "",
   retail_price: "",
   wholesale_price: "",
+  delivery_charge: "",
   moq: "1",
   unit: "piece",
   category_id: "",
@@ -95,6 +97,7 @@ function ProductFormModal({
           size_variant: product.size_variant || "",
           retail_price: product.retail_price?.toString() || "",
           wholesale_price: product.wholesale_price?.toString() || "",
+          delivery_charge: product.delivery_charge?.toString() || "",
           moq: product.moq?.toString() || "1",
           unit: product.unit || "piece",
           category_id: product.category_id || "",
@@ -189,6 +192,7 @@ function ProductFormModal({
         size_variant: form.size_variant || undefined,
         retail_price: form.retail_price ? parseFloat(form.retail_price) : undefined,
         wholesale_price: form.wholesale_price ? parseFloat(form.wholesale_price) : undefined,
+        delivery_charge: form.delivery_charge ? parseFloat(form.delivery_charge) : undefined,
         moq: parseInt(form.moq) || 1,
         unit: form.unit,
         category_id: finalCategoryId,
@@ -449,6 +453,21 @@ function ProductFormModal({
                 step="0.01"
                 value={form.wholesale_price}
                 onChange={(e) => setField("wholesale_price", e.target.value)}
+                placeholder="0.00"
+                className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">
+                Delivery Charge (₹)
+              </label>
+              <input
+                id="product-delivery-charge"
+                type="number"
+                min="0"
+                step="0.01"
+                value={form.delivery_charge}
+                onChange={(e) => setField("delivery_charge", e.target.value)}
                 placeholder="0.00"
                 className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
@@ -722,6 +741,7 @@ export default function AdminProductsPage() {
                       "Category",
                       "Retail Price",
                       "Wholesale",
+                      "Delivery",
                       "MOQ",
                       "Stock",
                       "Actions",
@@ -780,6 +800,10 @@ export default function AdminProductsPage() {
                       {/* Wholesale */}
                       <td className="px-4 py-3 text-slate-600">
                         {p.wholesale_price ? formatPrice(p.wholesale_price) : "—"}
+                      </td>
+                      {/* Delivery */}
+                      <td className="px-4 py-3 text-slate-600">
+                        {p.delivery_charge ? formatPrice(p.delivery_charge) : "—"}
                       </td>
                       {/* MOQ */}
                       <td className="px-4 py-3 text-slate-600">

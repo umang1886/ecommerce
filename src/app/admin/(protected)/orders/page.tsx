@@ -121,9 +121,25 @@ export default function AdminOrdersPage() {
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                   {orders.map((o) => (
-                    <tr key={o.id} className="hover:bg-slate-50/50 group">
-                      <td className="px-4 py-3 font-medium text-slate-900">
-                        {o.order_number}
+                    <tr key={o.id} className="hover:bg-slate-50/50 group align-top">
+                      <td className="px-4 py-3">
+                        <div className="font-medium text-slate-900 mb-2">{o.order_number}</div>
+                        {o.order_items && o.order_items.length > 0 && (
+                          <div className="space-y-1.5 border-l-2 border-slate-100 pl-2">
+                            {o.order_items.map(item => (
+                              <div key={item.id} className="flex items-start gap-2 text-xs">
+                                <div className="min-w-0 flex-1">
+                                  <div className="text-slate-700 font-medium truncate" title={item.product_name}>
+                                    {item.product_name}
+                                  </div>
+                                  <div className="text-slate-500">
+                                    {item.quantity} x {formatPrice(item.unit_price)}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-slate-600">
                         {new Date(o.created_at).toLocaleDateString()}
