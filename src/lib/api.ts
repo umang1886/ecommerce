@@ -209,6 +209,7 @@ export interface Category {
   slug: string;
   department_id: string;
   departments?: Department;
+  display_order?: number;
 }
 
 export interface Product {
