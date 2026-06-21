@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -14,7 +15,10 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProduct(slug).catch(() => null);
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore.getAll().map(c => `${c.name}=${c.value}`).join('; ');
+  
+  const product = await getProduct(slug, { headers: { cookie: cookieHeader } }).catch(() => null);
   if (!product) return { title: "Product Not Found" };
   return {
     title: `${product.name} — Jay Geli Ambe Maa Trader`,
@@ -26,11 +30,13 @@ export const revalidate = 3600;
 
 export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore.getAll().map(c => `${c.name}=${c.value}`).join('; ');
   
   console.log("Fetching product detail for slug:", slug);
   let product;
   try {
-    product = await getProduct(slug);
+    product = await getProduct(slug, { headers: { cookie: cookieHeader } });
     console.log("Product fetched:", product ? product.id : null);
   } catch (err) {
     console.error("Error fetching product:", err);

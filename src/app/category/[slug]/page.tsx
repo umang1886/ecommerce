@@ -21,6 +21,7 @@ export default function CategoryPage() {
   useEffect(() => {
     async function load() {
       setLoading(true);
+
       // Try fetching as category first, if not, try as department
       let cat = await getCategory(slug).catch((err) => {
         console.error(`[CategoryPage] Error fetching category ${slug}:`, err);

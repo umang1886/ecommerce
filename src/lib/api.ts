@@ -74,8 +74,11 @@ export const getProducts = (params: Record<string, string | number>) => {
   ).toString();
   return apiFetch<ProductsResponse>(`/api/products?${qs}`);
 };
-export const getProduct = (slug: string) =>
-  apiFetch<Product>(`/api/products/${slug}`);
+export const getProduct = (slug: string, options?: RequestInit) =>
+  apiFetch<Product>(`/api/products/${slug}`, options).catch((err) => {
+    console.error(`[getProduct SSR] Failed to fetch /api/products/${slug}:`, err);
+    throw err;
+  });
 
 // Cart (requires token)
 export const getCart = (token: string) =>
