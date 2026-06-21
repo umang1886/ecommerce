@@ -11,12 +11,12 @@ import { useAuth } from "@/components/auth/AuthProvider";
 const FREE_DELIVERY_THRESHOLD = 500;
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, subtotal } = useCartStore();
+  const { items, removeItem, updateQuantity, subtotal, deliveryTotal } = useCartStore();
   const { user } = useAuth();
   const [mounted, setMounted] = useState(false);
 
   const sub = subtotal();
-  const delivery = sub >= FREE_DELIVERY_THRESHOLD ? 0 : 50;
+  const delivery = deliveryTotal();
   const total = sub + delivery;
 
   useEffect(() => {
@@ -127,11 +127,6 @@ export default function CartPage() {
                   {delivery === 0 ? "FREE" : formatPrice(delivery)}
                 </span>
               </div>
-              {sub < FREE_DELIVERY_THRESHOLD && (
-                <p className="text-xs text-amber-500 bg-slate-50 px-3 py-2 rounded-lg">
-                  Add {formatPrice(FREE_DELIVERY_THRESHOLD - sub)} more for free delivery!
-                </p>
-              )}
               <div className="border-t border-slate-100 pt-3 flex justify-between font-bold text-slate-900">
                 <span>Total</span>
                 <span className="text-xl text-slate-900">{formatPrice(total)}</span>

@@ -27,7 +27,7 @@ interface Address {
 export default function CheckoutPage() {
   const { user, token } = useAuth();
   const router = useRouter();
-  const { items, subtotal, clearCart } = useCartStore();
+  const { items, subtotal, deliveryTotal, clearCart } = useCartStore();
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddr, setSelectedAddr] = useState<string>("");
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "online">("cod");
@@ -41,7 +41,7 @@ export default function CheckoutPage() {
   const [orderPlaced, setOrderPlaced] = useState(false);
 
   const sub = subtotal();
-  const delivery = sub >= 500 ? 0 : 50;
+  const delivery = deliveryTotal();
   const total = sub + delivery;
 
   useEffect(() => {

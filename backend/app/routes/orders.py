@@ -10,8 +10,7 @@ orders_bp = Blueprint("orders", __name__)
 FREE_DELIVERY_THRESHOLD = 500  # ₹500
 
 
-def _calc_delivery(subtotal: float) -> float:
-    return 0.0 if subtotal >= FREE_DELIVERY_THRESHOLD else 50.0
+FREE_DELIVERY_THRESHOLD = 500  # ₹500
 
 
 def _order_number() -> str:
@@ -37,7 +36,7 @@ def create_order():
     product_ids = [i["product_id"] for i in items]
     prods_resp = (
         sb.table("products")
-        .select("id, name, slug, retail_price, wholesale_price, moq, in_stock")
+        .select("id, name, slug, retail_price, wholesale_price, delivery_charge, moq, in_stock")
         .in_("id", product_ids)
         .execute()
     )
@@ -49,6 +48,7 @@ def create_order():
 
     order_items = []
     subtotal = 0.0
+    delivery_charge = 0.0
     for item in items:
         prod = product_map.get(item["product_id"])
         if not prod:
@@ -57,8 +57,10 @@ def create_order():
             return jsonify({"error": f"Product '{prod['name']}' is out of stock"}), 409
         qty = max(item.get("quantity", 1), prod["moq"])
         price = float(prod["wholesale_price"] or prod["retail_price"]) if is_wholesale else float(prod["retail_price"] or 0)
+        prod_delivery = float(prod.get("delivery_charge") or 0.0)
         line_total = price * qty
         subtotal += line_total
+        delivery_charge += prod_delivery * qty
         order_items.append(
             {
                 "product_id": prod["id"],
@@ -70,7 +72,6 @@ def create_order():
             }
         )
 
-    delivery_charge = _calc_delivery(subtotal)
     total = subtotal + delivery_charge
 
     # Create order
