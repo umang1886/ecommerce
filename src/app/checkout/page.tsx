@@ -65,6 +65,23 @@ export default function CheckoutPage() {
   async function saveNewAddress() {
     if (!user) return;
     try {
+      // Ensure customer record exists
+      const { data: customerData } = await supabase
+        .from("customers")
+        .select("id")
+        .eq("id", user.id)
+        .single();
+
+      if (!customerData) {
+        await supabase.from("customers").insert({
+          id: user.id,
+          full_name: user.user_metadata?.full_name || newAddr.full_name || "Customer",
+          email: user.email,
+          phone: user.phone || newAddr.phone || "",
+          account_type: "retail",
+        });
+      }
+
       const { data, error } = await supabase
         .from("addresses")
         .insert({ ...newAddr, customer_id: user.id, is_default: false })
